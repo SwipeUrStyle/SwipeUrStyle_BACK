@@ -1,6 +1,6 @@
 package com.swipeurstyle.jwt.backend.configuration;
 
-import com.swipeurstyle.jwt.backend.dao.SessionRepository;
+import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.entity.Session;
 import com.swipeurstyle.jwt.backend.entity.UserRole;
 import jakarta.servlet.http.Cookie;

@@ -10,5 +10,5 @@ public class GarmentRequest {
     private String name;
     private String description;
     private GarmentCategory category;
-    private Long imageId;
+    private String imageName;
 }

@@ -1,4 +1,4 @@
-package com.swipeurstyle.jwt.backend.dao;
+package com.swipeurstyle.jwt.backend.repository;
 
 import com.swipeurstyle.jwt.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

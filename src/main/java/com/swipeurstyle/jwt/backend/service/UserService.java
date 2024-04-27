@@ -1,14 +1,12 @@
 package com.swipeurstyle.jwt.backend.service;
 
-import com.swipeurstyle.jwt.backend.dao.UserRepository;
+import com.swipeurstyle.jwt.backend.repository.UserRepository;
 import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.entity.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class UserService {

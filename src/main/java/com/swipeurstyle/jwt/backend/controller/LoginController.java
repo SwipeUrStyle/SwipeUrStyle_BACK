@@ -1,20 +1,15 @@
 package com.swipeurstyle.jwt.backend.controller;
 
-import com.swipeurstyle.jwt.backend.dao.SessionRepository;
-import com.swipeurstyle.jwt.backend.dao.UserRepository;
+import com.swipeurstyle.jwt.backend.repository.SessionRepository;
+import com.swipeurstyle.jwt.backend.repository.UserRepository;
 import com.swipeurstyle.jwt.backend.entity.*;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.UUID;
 
 @Controller
