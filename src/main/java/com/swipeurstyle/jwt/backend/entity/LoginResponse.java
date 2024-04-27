@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @Getter
 @Setter
-public class JwtResponse {
+public class LoginResponse {
 
     private User user;
-    private String jwtToken;
+    private UUID token;
 
 }

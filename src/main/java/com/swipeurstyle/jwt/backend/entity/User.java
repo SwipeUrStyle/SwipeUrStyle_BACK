@@ -1,29 +1,30 @@
 package com.swipeurstyle.jwt.backend.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
-@Entity
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@ToString
+@Table(name = "user")
 public class User {
 
     @Id
-    private String userName;
-    private String userFirstName;
-    private String userLastName;
-    private String userPassword;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "USER_ROLE",
-    joinColumns = {
-            @JoinColumn(name = "USER_ID")
-    },
-            inverseJoinColumns = {
-            @JoinColumn(name = "ROLE_ID")
-            }
-    )
-    private Set<Role> role;
+    @Column(name = "email", nullable=false, unique=true)
+    private String email;
+
+    @Column(name = "password", nullable=false)
+    private String password;
+
+    @Column(name = "roles", nullable=false)
+    private List<UserRole> userRoles;
+
 }
