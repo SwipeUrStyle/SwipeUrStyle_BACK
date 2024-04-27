@@ -40,11 +40,11 @@ public class GarmentController {
         }
         User user = session.getUser();
         Garment garment = new Garment();
-        Optional<FileData> image = storageService.loadImageFromName(garmentRequest.getImageName());
-        if (image.isEmpty()) {
+        byte[] imageData=storageService.downloadImage(garmentRequest.getImageName());
+        if (imageData.length == 0) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        garment.setImageName(image.get().getName());
+        garment.setImageName(garmentRequest.getImageName());
         garment.setName(garmentRequest.getName());
         garment.setCategory(garmentRequest.getCategory());
         garment.setDescription(garmentRequest.getDescription());
