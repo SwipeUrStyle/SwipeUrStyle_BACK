@@ -1,19 +1,18 @@
 package com.swipeurstyle.jwt.backend.controller;
 
+
 import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.entity.*;
 import com.swipeurstyle.jwt.backend.service.GarmentService;
 import com.swipeurstyle.jwt.backend.service.StorageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +25,9 @@ public class GarmentController {
     private final StorageService storageService;
 
     @Autowired
-    public GarmentController(GarmentService garmentService, SessionRepository sessionRepository, StorageService storageService) {
+    public GarmentController(GarmentService garmentService,
+                             SessionRepository sessionRepository,
+                             StorageService storageService) {
         this.garmentService = garmentService;
         this.sessionRepository = sessionRepository;
         this.storageService = storageService;
@@ -61,6 +62,58 @@ public class GarmentController {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
         User user = session.getUser();
-        return new ResponseEntity<>(garmentService.getAllGarmentsByUser(user), HttpStatus.FOUND);
+        return new ResponseEntity<>(garmentService.getAllGarmentsCreatedByUser(user), HttpStatus.FOUND);
     }
+
+    @DeleteMapping("/garment/{id}")
+    public ResponseEntity<Garment> deleteGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = session.getUser();
+
+        Optional<Garment> optionalGarment = Optional.ofNullable(garmentService.getGarmentByIdAndUser(id, user));
+        if (!optionalGarment.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Garment garmentToDelete = optionalGarment.get();
+
+        garmentService.deleteGarmentByUser(garmentToDelete.getId(), user);
+
+        return new ResponseEntity<>(garmentToDelete,HttpStatus.OK);
+    }
+
+    @GetMapping({"/garments/trash"})
+    public ResponseEntity<List<Garment>> getAllGarmentsDeleted(@CookieValue(name = "authToken") String authToken) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        User user = session.getUser();
+        return new ResponseEntity<>(garmentService.getAllGarmentsDeletedByUser(user), HttpStatus.FOUND);
+    }
+
+    @PutMapping("/garment/restore/{id}")
+    public ResponseEntity<Garment> restoreGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = session.getUser();
+
+        Optional<Garment> optionalGarmentDeleted = Optional.ofNullable(garmentService.getGarmentByIdAndUser(id, user));
+        if (!optionalGarmentDeleted.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Garment garmentDeleted = optionalGarmentDeleted.get();
+
+        return new ResponseEntity<>(garmentService.restoreGarment(garmentDeleted.getId(),user),HttpStatus.OK);
+    }
+
+
 }

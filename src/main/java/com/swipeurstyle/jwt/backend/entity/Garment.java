@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -18,5 +20,11 @@ public class Garment {
     private String imageName;
     @ManyToOne
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    private GarmentState garmentState = GarmentState.CREATED;
+
+    @Column(nullable = true)
+    private LocalDateTime deletedAt;
 
 }
