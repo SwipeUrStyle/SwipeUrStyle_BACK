@@ -96,7 +96,7 @@ public class GarmentController {
         return new ResponseEntity<>(garmentService.getAllGarmentsDeletedByUser(user), HttpStatus.FOUND);
     }
 
-    @PutMapping("/garments/restore/{id}")
+    @PutMapping("/garment/restore/{id}")
     public ResponseEntity<Garment> restoreGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
