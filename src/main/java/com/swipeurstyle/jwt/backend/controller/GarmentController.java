@@ -91,7 +91,7 @@ public class GarmentController {
     }
 
     @DeleteMapping("/garment/{id}")
-    public ResponseEntity<Garment> deleteGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<Garment> deleteGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) throws GarmentException {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -122,7 +122,7 @@ public class GarmentController {
     }
 
     @PutMapping("/garment/restore/{id}")
-    public ResponseEntity<Garment> restoreGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<Garment> restoreGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) throws GarmentException {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

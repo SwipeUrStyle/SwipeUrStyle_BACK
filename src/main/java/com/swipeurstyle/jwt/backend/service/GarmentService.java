@@ -1,10 +1,7 @@
 package com.swipeurstyle.jwt.backend.service;
 
-import com.swipeurstyle.jwt.backend.entity.GarmentCategory;
-import com.swipeurstyle.jwt.backend.entity.GarmentState;
-import com.swipeurstyle.jwt.backend.entity.User;
+import com.swipeurstyle.jwt.backend.entity.*;
 import com.swipeurstyle.jwt.backend.repository.GarmentRepository;
-import com.swipeurstyle.jwt.backend.entity.Garment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -55,7 +52,7 @@ public class GarmentService {
     }
 
 
-    public Garment getGarmentByIdAndUser(Long garmentId, User user) {
+    public Garment getGarmentByIdAndUser(Long garmentId, User user) throws GarmentException {
         List<Garment> garments = getAllGarmentsByUser(user);
         Garment garmentToFind = null;
         for (Garment garment : garments) {
@@ -65,13 +62,13 @@ public class GarmentService {
             }
         }
         if (garmentToFind == null) {
-            throw new NoSuchElementException("Garment with id " + garmentId + " not found for user " + user.getEmail());
+            throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
 
         return garmentToFind;
     }
 
-    public Garment deleteGarmentByUser(Long garmentId, User user) {
+    public Garment deleteGarmentByUser(Long garmentId, User user) throws GarmentException {
         List<Garment> garments = getAllGarmentsCreatedByUser(user);
         Garment garmentToDelete = null;
         for (Garment garment : garments) {
@@ -81,7 +78,7 @@ public class GarmentService {
             }
         }
         if (garmentToDelete == null) {
-            throw new NoSuchElementException("Garment with id " + garmentId + " not found for user " + user.getEmail());
+            throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
 
         garmentToDelete.setGarmentState(GarmentState.DELETED);
@@ -104,13 +101,13 @@ public class GarmentService {
         garmentRepository.deleteByDeletedAtBefore(thirtyDaysAgo);
     }
 
-    public Garment restoreGarment(Long garmentId, User user) {
+    public Garment restoreGarment(Long garmentId, User user) throws GarmentException {
         Garment garmentToRestore = getGarmentByIdAndUser(garmentId, user);
         if (garmentToRestore == null) {
-            throw new NoSuchElementException("Garment with id " + garmentId + " not found for user " + user.getEmail());
+            throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
         if (garmentToRestore.getGarmentState().equals(GarmentState.CREATED)){
-            throw new IllegalStateException("Garment with id " + garmentId + " is already in CREATED state");
+            throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
         garmentToRestore.setGarmentState(GarmentState.CREATED);
 
