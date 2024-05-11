@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -46,7 +46,7 @@ public class OutfitController {
 
         boolean scheduled = outfitRequest.isScheduled();
 
-        LocalDateTime scheduledFor = outfitRequest.getScheduledFor();
+        LocalDate scheduledFor = outfitRequest.getScheduledFor();
 
         return new ResponseEntity<>(outfitService.addNewOutfit(garments, scheduledFor, user, scheduled), HttpStatus.CREATED);
     }
@@ -139,7 +139,7 @@ public class OutfitController {
                     outfit.setScheduled(scheduled);
                     break;
                 case "scheduledFor":
-                    LocalDateTime scheduledFor = (LocalDateTime) value;
+                    LocalDate scheduledFor = (LocalDate) value;
                     outfit.setScheduledFor(scheduledFor);
                     break;
             }

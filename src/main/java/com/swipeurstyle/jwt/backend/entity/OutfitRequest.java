@@ -3,7 +3,7 @@ package com.swipeurstyle.jwt.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -13,5 +13,5 @@ public class OutfitRequest {
     private Long shoesId;
     private boolean scheduled;
 
-    private LocalDateTime scheduledFor;
+    private LocalDate scheduledFor;
 }
