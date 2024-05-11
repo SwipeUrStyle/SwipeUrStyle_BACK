@@ -28,7 +28,7 @@ public class OutfitService {
         return outfitRepository.findByUser(user);
     }
 
-    public Outfit addNewOutfit(List<Garment> garments, Optional<LocalDateTime> scheduledFor, User user, boolean scheduled) {
+    public Outfit addNewOutfit(List<Garment> garments, LocalDateTime scheduledFor, User user, boolean scheduled) {
         if (garments.size() != 3) {
             throw new IllegalArgumentException("The outfit must have three items");
         }
@@ -58,7 +58,11 @@ public class OutfitService {
         outfit.setBottom(bottom);
         outfit.setShoes(shoes);
         outfit.setScheduled(scheduled);
-        scheduledFor.ifPresent(outfit::setScheduledFor); // Set scheduledFor only if present
+        if (scheduled){
+            outfit.setScheduledFor(scheduledFor);
+        } else {
+            outfit.setScheduledFor(null);
+        }
         outfit.setCreatedAt(LocalDateTime.now());
         outfit.setUser(user);
 
