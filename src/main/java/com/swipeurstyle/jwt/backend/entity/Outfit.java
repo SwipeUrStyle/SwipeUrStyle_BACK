@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,11 +32,11 @@ public class Outfit {
     @ManyToOne
     private User user;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     private boolean scheduled;
 
-    private LocalDateTime scheduledFor;
+    private LocalDate scheduledFor;
 
 
 

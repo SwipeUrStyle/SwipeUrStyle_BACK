@@ -5,7 +5,7 @@ import com.swipeurstyle.jwt.backend.repository.OutfitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,7 +28,7 @@ public class OutfitService {
         return outfitRepository.findByUser(user);
     }
 
-    public Outfit addNewOutfit(List<Garment> garments, LocalDateTime scheduledFor, User user, boolean scheduled) {
+    public Outfit addNewOutfit(List<Garment> garments, LocalDate scheduledFor, User user, boolean scheduled) {
         if (garments.size() != 3) {
             throw new IllegalArgumentException("The outfit must have three items");
         }
@@ -63,14 +63,14 @@ public class OutfitService {
         } else {
             outfit.setScheduledFor(null);
         }
-        outfit.setCreatedAt(LocalDateTime.now());
+        outfit.setCreatedAt(LocalDate.now());
         outfit.setUser(user);
 
         return outfitRepository.save(outfit);
     }
 
 
-    public Outfit updateOutfitToScheduled(LocalDateTime scheduledFor, Outfit outfit, User user) {
+    public Outfit updateOutfitToScheduled(LocalDate scheduledFor, Outfit outfit, User user) {
         if (outfitRepository.findById(outfit.getId()).isPresent()) {
             if(outfit.getUser().equals(user)) {
                 outfit.setScheduled(true);
