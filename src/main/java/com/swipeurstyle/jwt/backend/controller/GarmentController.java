@@ -65,6 +65,17 @@ public class GarmentController {
         return new ResponseEntity<>(garmentService.getAllGarmentsCreatedByUser(user), HttpStatus.FOUND);
     }
 
+    @GetMapping({"/garments/{category}"})
+    public ResponseEntity<List<Garment>> getAllGarmentsByCategory(@PathVariable GarmentCategory category,
+                                                                  @CookieValue(name = "authToken") String authToken) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        User user = session.getUser();
+        return new ResponseEntity<>(garmentService.getAllGarmentsByCategory(category, user), HttpStatus.FOUND);
+    }
+
     @DeleteMapping("/garment/{id}")
     public ResponseEntity<Garment> deleteGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
