@@ -1,5 +1,6 @@
 package com.swipeurstyle.jwt.backend.service;
 
+import com.swipeurstyle.jwt.backend.entity.GarmentCategory;
 import com.swipeurstyle.jwt.backend.entity.GarmentState;
 import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.repository.GarmentRepository;
@@ -85,6 +86,7 @@ public class GarmentService {
 
         garmentToDelete.setGarmentState(GarmentState.DELETED);
         garmentToDelete.setDeletedAt(LocalDateTime.now());
+        garmentToDelete.setDeletedAt(null);
 
 
 
@@ -113,5 +115,16 @@ public class GarmentService {
         garmentToRestore.setGarmentState(GarmentState.CREATED);
 
         return garmentRepository.save(garmentToRestore);
+    }
+
+    public List<Garment> getAllGarmentsByCategory(GarmentCategory category, User user){
+        List<Garment> garments = getAllGarmentsByUser(user);
+        List<Garment> garmentsByCategory = new ArrayList<>();
+        for (Garment garment : garments){
+            if (garment.getCategory().equals(category)){
+                garmentsByCategory.add(garment);
+            }
+        }
+        return garmentsByCategory;
     }
 }
