@@ -20,7 +20,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(basicAuthInterceptor)
                 .addPathPatterns("/garments/**")
-                //.addPathPatterns("/image/**")
+                .addPathPatterns("/image/**")
+                .addPathPatterns("/outfit/**")
+                .addPathPatterns("/garment/**")
+                .addPathPatterns("/outfits/**")
                 .excludePathPatterns("/static/**");
     }
 
