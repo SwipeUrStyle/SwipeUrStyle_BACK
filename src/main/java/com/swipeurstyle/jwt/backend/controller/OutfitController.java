@@ -46,7 +46,7 @@ public class OutfitController {
 
         boolean scheduled = outfitRequest.isScheduled();
 
-        Optional<LocalDateTime> scheduledFor = outfitRequest.getScheduledFor();
+        LocalDateTime scheduledFor = outfitRequest.getScheduledFor();
 
         return new ResponseEntity<>(outfitService.addNewOutfit(garments, scheduledFor, user, scheduled), HttpStatus.CREATED);
     }
