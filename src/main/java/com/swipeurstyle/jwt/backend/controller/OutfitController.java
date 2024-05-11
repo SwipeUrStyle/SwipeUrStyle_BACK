@@ -123,15 +123,30 @@ public class OutfitController {
         updates.forEach((key, value) -> {
             switch (key) {
                 case "top":
-                    Garment top = garmentService.getGarmentByIdAndUser((Long) value, user);
+                    Garment top = null;
+                    try {
+                        top = garmentService.getGarmentByIdAndUser((Long) value, user);
+                    } catch (GarmentException e) {
+                        throw new RuntimeException(e);
+                    }
                     outfit.setTop(top);
                     break;
                 case "bottom":
-                    Garment bottom = garmentService.getGarmentByIdAndUser((Long) value, user);
+                    Garment bottom = null;
+                    try {
+                        bottom = garmentService.getGarmentByIdAndUser((Long) value, user);
+                    } catch (GarmentException e) {
+                        throw new RuntimeException(e);
+                    }
                     outfit.setBottom(bottom);
                     break;
                 case "shoes":
-                    Garment shoes = garmentService.getGarmentByIdAndUser((Long) value, user);
+                    Garment shoes = null;
+                    try {
+                        shoes = garmentService.getGarmentByIdAndUser((Long) value, user);
+                    } catch (GarmentException e) {
+                        throw new RuntimeException(e);
+                    }
                     outfit.setShoes(shoes);
                     break;
                 case "scheduled":
