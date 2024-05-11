@@ -1,5 +1,6 @@
 package com.swipeurstyle.jwt.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,7 @@ public class Outfit {
 
     private boolean scheduled;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate scheduledFor;
 
 
