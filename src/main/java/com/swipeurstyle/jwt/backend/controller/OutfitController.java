@@ -21,7 +21,7 @@ public class OutfitController {
 
     @Autowired
     public OutfitController(OutfitService outfitService,
-                             SessionRepository sessionRepository,
+                            SessionRepository sessionRepository,
                             GarmentService garmentService) {
         this.outfitService = outfitService;
         this.sessionRepository = sessionRepository;
@@ -30,19 +30,24 @@ public class OutfitController {
 
     @PostMapping(value = {"/outfit"})
     public ResponseEntity<Outfit> addNewOutfit(@RequestBody OutfitRequest outfitRequest,
-                                               @CookieValue(name = "authToken") String authToken){
+                                               @RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
         User user = session.getUser();
         List<Garment> garments = new ArrayList<>();
-        Garment top = garmentService.getGarmentByIdAndUser(outfitRequest.getTopId(), user);
-        garments.add(top);
-        Garment bottom = garmentService.getGarmentByIdAndUser(outfitRequest.getBottomId(), user);
-        garments.add(bottom);
-        Garment shoes = garmentService.getGarmentByIdAndUser(outfitRequest.getShoesId(), user);
-        garments.add(shoes);
+        try {
+            Garment top = garmentService.getGarmentByIdAndUser(outfitRequest.getTopId(), user);
+            garments.add(top);
+            Garment bottom = garmentService.getGarmentByIdAndUser(outfitRequest.getBottomId(), user);
+            garments.add(bottom);
+            Garment shoes = garmentService.getGarmentByIdAndUser(outfitRequest.getShoesId(), user);
+            garments.add(shoes);
+        } catch (GarmentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
 
         boolean scheduled = outfitRequest.isScheduled();
 
@@ -52,9 +57,8 @@ public class OutfitController {
     }
 
 
-
     @GetMapping({"/outfits"})
-    public ResponseEntity<List<Outfit>> getAllOutfits(@CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<List<Outfit>> getAllOutfits(@RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -64,7 +68,7 @@ public class OutfitController {
     }
 
     @GetMapping({"/outfits/scheduled"})
-    public ResponseEntity<List<Outfit>> getAllOutfitsScheduled(@CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<List<Outfit>> getAllOutfitsScheduled(@RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -74,7 +78,7 @@ public class OutfitController {
     }
 
     @GetMapping({"/outfits/not-scheduled"})
-    public ResponseEntity<List<Outfit>> getAllOutfitsNotScheduled(@CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<List<Outfit>> getAllOutfitsNotScheduled(@RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -84,7 +88,7 @@ public class OutfitController {
     }
 
     @DeleteMapping("/outfit/{id}")
-    public ResponseEntity<Outfit> deleteOutfit(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<Outfit> deleteOutfit(@PathVariable Long id, @RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -101,15 +105,15 @@ public class OutfitController {
 
         outfitService.deleteOutfitByUser(user, outfitToDelete.getId());
 
-        return new ResponseEntity<>(outfitToDelete,HttpStatus.OK);
+        return new ResponseEntity<>(outfitToDelete, HttpStatus.OK);
     }
 
     @PatchMapping("/outfit/{id}")
     public ResponseEntity<Outfit> partialUpdateOutfit(
             @PathVariable("id") Long outfitId,
             @RequestBody Map<String, Object> updates,
-            @CookieValue(name = "authToken") String authToken
-    ){
+            @RequestHeader(name = "authToken") String authToken
+    ) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

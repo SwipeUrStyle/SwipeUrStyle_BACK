@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class GarmentService {
@@ -17,10 +16,11 @@ public class GarmentService {
     private final GarmentRepository garmentRepository;
 
     @Autowired
-    public GarmentService(GarmentRepository garmentRepository){
+    public GarmentService(GarmentRepository garmentRepository) {
         this.garmentRepository = garmentRepository;
     }
-    public Garment addNewGarment(Garment garment){
+
+    public Garment addNewGarment(Garment garment) {
         return garmentRepository.save(garment);
     }
 
@@ -86,7 +86,6 @@ public class GarmentService {
         garmentToDelete.setDeletedAt(null);
 
 
-
         return garmentRepository.save(garmentToDelete);
     }
 
@@ -106,7 +105,7 @@ public class GarmentService {
         if (garmentToRestore == null) {
             throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
-        if (garmentToRestore.getGarmentState().equals(GarmentState.CREATED)){
+        if (garmentToRestore.getGarmentState().equals(GarmentState.CREATED)) {
             throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
         garmentToRestore.setGarmentState(GarmentState.CREATED);
@@ -114,11 +113,11 @@ public class GarmentService {
         return garmentRepository.save(garmentToRestore);
     }
 
-    public List<Garment> getAllGarmentsByCategory(GarmentCategory category, User user){
+    public List<Garment> getAllGarmentsByCategory(GarmentCategory category, User user) {
         List<Garment> garments = getAllGarmentsByUser(user);
         List<Garment> garmentsByCategory = new ArrayList<>();
-        for (Garment garment : garments){
-            if (garment.getCategory().equals(category)){
+        for (Garment garment : garments) {
+            if (garment.getCategory().equals(category)) {
                 garmentsByCategory.add(garment);
             }
         }

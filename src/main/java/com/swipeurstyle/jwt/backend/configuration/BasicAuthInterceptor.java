@@ -1,9 +1,8 @@
 package com.swipeurstyle.jwt.backend.configuration;
 
-import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.entity.Session;
 import com.swipeurstyle.jwt.backend.entity.UserRole;
-import jakarta.servlet.http.Cookie;
+import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -30,20 +28,12 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     }
 
 
-    private String getCookieValue(HttpServletRequest req, String cookieName) {
-        return Arrays.stream(req.getCookies())
-                .filter(c -> c.getName().equals(cookieName))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElse(null);
-    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("BasicAuthInterceptor::preHandle()");
         String path = request.getRequestURI();
         log.info("Path:" + path);
-        String authToken = getCookieValue(request, "authToken");
+        String authToken = request.getHeader("authToken");
         log.info("AuthToken: " + authToken);
         if (authToken != null) {
             Session session = sessionRepository.findByToken(UUID.fromString(authToken));

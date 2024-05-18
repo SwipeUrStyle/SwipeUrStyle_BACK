@@ -1,6 +1,9 @@
 package com.swipeurstyle.jwt.backend.service;
 
-import com.swipeurstyle.jwt.backend.entity.*;
+import com.swipeurstyle.jwt.backend.entity.Garment;
+import com.swipeurstyle.jwt.backend.entity.GarmentCategory;
+import com.swipeurstyle.jwt.backend.entity.Outfit;
+import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.repository.OutfitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +27,7 @@ public class OutfitService {
         this.garmentService = garmentService;
     }
 
-    public List<Outfit> getAllOutfitsByUser(User user){
+    public List<Outfit> getAllOutfitsByUser(User user) {
         return outfitRepository.findByUser(user);
     }
 
@@ -58,7 +61,7 @@ public class OutfitService {
         outfit.setBottom(bottom);
         outfit.setShoes(shoes);
         outfit.setScheduled(scheduled);
-        if (scheduled){
+        if (scheduled) {
             outfit.setScheduledFor(scheduledFor);
         } else {
             outfit.setScheduledFor(null);
@@ -72,7 +75,7 @@ public class OutfitService {
 
     public Outfit updateOutfitToScheduled(LocalDate scheduledFor, Outfit outfit, User user) {
         if (outfitRepository.findById(outfit.getId()).isPresent()) {
-            if(outfit.getUser().equals(user)) {
+            if (outfit.getUser().equals(user)) {
                 outfit.setScheduled(true);
                 outfit.setScheduledFor(scheduledFor);
                 return outfitRepository.save(outfit);
@@ -85,7 +88,7 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         List<Outfit> scheduledOutfits = new ArrayList<>();
         for (Outfit outfit : outfits) {
-            if (outfit.isScheduled()){
+            if (outfit.isScheduled()) {
                 scheduledOutfits.add(outfit);
             }
         }
@@ -96,17 +99,17 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         List<Outfit> notScheduledOutfits = new ArrayList<>();
         for (Outfit outfit : outfits) {
-            if (!outfit.isScheduled()){
+            if (!outfit.isScheduled()) {
                 notScheduledOutfits.add(outfit);
             }
         }
         return notScheduledOutfits;
     }
 
-    public Outfit deleteOutfitByUser(User user, Long id){
+    public Outfit deleteOutfitByUser(User user, Long id) {
         Optional<Outfit> outfitToDelete = outfitRepository.findById(id);
-        if (outfitToDelete.isPresent()){
-            if (outfitToDelete.get().getUser().equals(user)){
+        if (outfitToDelete.isPresent()) {
+            if (outfitToDelete.get().getUser().equals(user)) {
                 outfitRepository.delete(outfitToDelete.get());
                 return outfitToDelete.get();
             }

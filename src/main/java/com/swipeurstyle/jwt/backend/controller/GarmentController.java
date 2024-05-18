@@ -1,17 +1,14 @@
 package com.swipeurstyle.jwt.backend.controller;
 
 
-import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.entity.*;
+import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.service.GarmentService;
 import com.swipeurstyle.jwt.backend.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 
 import java.util.List;
 import java.util.Optional;
@@ -34,14 +31,14 @@ public class GarmentController {
     }
 
     @PostMapping(value = {"/garment"})
-    public ResponseEntity<Garment> addNewGarment(@RequestBody GarmentRequest garmentRequest, @CookieValue(name = "authToken") String authToken){
+    public ResponseEntity<Garment> addNewGarment(@RequestBody GarmentRequest garmentRequest, @RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
         User user = session.getUser();
         Garment garment = new Garment();
-        byte[] imageData=storageService.downloadImage(garmentRequest.getImageName());
+        byte[] imageData = storageService.downloadImage(garmentRequest.getImageName());
         if (imageData.length == 0) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -56,7 +53,7 @@ public class GarmentController {
 
 
     @GetMapping({"/garments"})
-    public ResponseEntity<List<Garment>> getAllGarments(@CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<List<Garment>> getAllGarments(@RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -67,14 +64,14 @@ public class GarmentController {
 
     @GetMapping({"/garments/{category}"})
     public ResponseEntity<List<Garment>> getAllGarmentsByCategory(@PathVariable String category,
-                                                                  @CookieValue(name = "authToken") String authToken) {
+                                                                  @RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
         User user = session.getUser();
         GarmentCategory garmentCategory = null;
-        switch (category){
+        switch (category) {
             case "TOP":
                 garmentCategory = GarmentCategory.TOP;
                 break;
@@ -91,7 +88,7 @@ public class GarmentController {
     }
 
     @DeleteMapping("/garment/{id}")
-    public ResponseEntity<Garment> deleteGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) throws GarmentException {
+    public ResponseEntity<Garment> deleteGarment(@PathVariable Long id, @RequestHeader(name = "authToken") String authToken) throws GarmentException {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -108,11 +105,11 @@ public class GarmentController {
 
         garmentService.deleteGarmentByUser(garmentToDelete.getId(), user);
 
-        return new ResponseEntity<>(garmentToDelete,HttpStatus.OK);
+        return new ResponseEntity<>(garmentToDelete, HttpStatus.OK);
     }
 
     @GetMapping({"/garments/trash"})
-    public ResponseEntity<List<Garment>> getAllGarmentsDeleted(@CookieValue(name = "authToken") String authToken) {
+    public ResponseEntity<List<Garment>> getAllGarmentsDeleted(@RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -122,7 +119,7 @@ public class GarmentController {
     }
 
     @PutMapping("/garment/restore/{id}")
-    public ResponseEntity<Garment> restoreGarment(@PathVariable Long id, @CookieValue(name = "authToken") String authToken) throws GarmentException {
+    public ResponseEntity<Garment> restoreGarment(@PathVariable Long id, @RequestHeader(name = "authToken") String authToken) throws GarmentException {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -137,7 +134,7 @@ public class GarmentController {
 
         Garment garmentDeleted = optionalGarmentDeleted.get();
 
-        return new ResponseEntity<>(garmentService.restoreGarment(garmentDeleted.getId(),user),HttpStatus.OK);
+        return new ResponseEntity<>(garmentService.restoreGarment(garmentDeleted.getId(), user), HttpStatus.OK);
     }
 
 

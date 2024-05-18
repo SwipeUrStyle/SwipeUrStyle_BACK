@@ -28,7 +28,7 @@ public class ImageController {
 
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file,
-                                         @CookieValue(name = "authToken") String authToken) throws IOException {
+                                         @RequestHeader(name = "authToken") String authToken) throws IOException {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -40,12 +40,12 @@ public class ImageController {
 
     @GetMapping("/{fileName}")
     public ResponseEntity<?> downloadImage(@PathVariable String fileName,
-                                           @CookieValue(name = "authToken") String authToken){
+                                           @RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
         if (session == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
-        byte[] imageData=service.downloadImage(fileName);
+        byte[] imageData = service.downloadImage(fileName);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
                 .body(imageData);
