@@ -40,5 +40,4 @@ public class Outfit {
     private LocalDate scheduledFor;
 
 
-
 }

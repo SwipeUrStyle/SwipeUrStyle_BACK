@@ -1,13 +1,18 @@
 package com.swipeurstyle.jwt.backend.controller;
 
+import com.swipeurstyle.jwt.backend.entity.LoginRequest;
+import com.swipeurstyle.jwt.backend.entity.LoginResponse;
+import com.swipeurstyle.jwt.backend.entity.Session;
+import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.repository.UserRepository;
-import com.swipeurstyle.jwt.backend.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -19,6 +19,6 @@ public class ImageData {
     private String name;
     private String type;
     @Lob
-    @Column(name = "imagedata",length = 1200000)
+    @Column(name = "imagedata", length = 1200000)
     private byte[] imageData;
 }

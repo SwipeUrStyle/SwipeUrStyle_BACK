@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "session")
 public class Session {
     @Id
-    @Column(name = "token", nullable=false, unique=true)
+    @Column(name = "token", nullable = false, unique = true)
     private UUID token;
 
     @Column(name = "timestamp", nullable = false)
