@@ -34,7 +34,7 @@ public class Outfit {
 
     private LocalDate createdAt;
 
-    private boolean scheduled;
+    private boolean scheduled = false;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate scheduledFor;
