@@ -1,6 +1,9 @@
 package com.swipeurstyle.jwt.backend.service;
 
-import com.swipeurstyle.jwt.backend.entity.*;
+import com.swipeurstyle.jwt.backend.entity.Garment;
+import com.swipeurstyle.jwt.backend.entity.GarmentCategory;
+import com.swipeurstyle.jwt.backend.entity.GarmentState;
+import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.exception.GarmentException;
 import com.swipeurstyle.jwt.backend.repository.GarmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
