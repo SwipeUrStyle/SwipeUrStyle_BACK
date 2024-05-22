@@ -181,7 +181,7 @@ public class GarmentController {
                         break;
                     case "category":
                         GarmentCategory garmentCategory;
-                        switch ((String) value) {
+                        switch (((String) value).toUpperCase()) {
                             case "TOP":
                                 garmentCategory = GarmentCategory.TOP;
                                 break;
