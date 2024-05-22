@@ -19,10 +19,12 @@ import java.util.NoSuchElementException;
 public class GarmentService {
 
     private final GarmentRepository garmentRepository;
+    private final StorageService storageService;
 
     @Autowired
-    public GarmentService(GarmentRepository garmentRepository) {
+    public GarmentService(GarmentRepository garmentRepository, StorageService storageService) {
         this.garmentRepository = garmentRepository;
+        this.storageService = storageService;
     }
 
     public Garment addNewGarment(Garment garment) {
@@ -147,6 +149,8 @@ public class GarmentService {
     public void cleanTrash(User user) {
         List<Garment> deletedGarments = getAllGarmentsDeletedByUser(user);
         for (Garment garment : deletedGarments) {
+            String imageName = garment.getImageName();
+            storageService.deleteImage(imageName);
             garmentRepository.delete(garment);
         }
     }
@@ -168,6 +172,8 @@ public class GarmentService {
             throw new GarmentException(GarmentException.GARMENT_NOT_IN_TRASH);
         }
 
+        String imageName = garmentToDelete.getImageName();
+        storageService.deleteImage(imageName);
         garmentRepository.delete(garmentToDelete);
     }
 

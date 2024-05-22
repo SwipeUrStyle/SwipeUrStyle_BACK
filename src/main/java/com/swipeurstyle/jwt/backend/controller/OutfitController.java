@@ -159,6 +159,7 @@ public class OutfitController {
                         break;
                     case "scheduledFor":
                         LocalDate scheduledFor = LocalDate.parse(value.toString());
+                        outfit.setScheduled(true);
                         outfit.setScheduledFor(scheduledFor);
                         break;
                     case "favorite":
