@@ -116,6 +116,45 @@ public class GarmentController {
         return new ResponseEntity<>(garmentToDelete, HttpStatus.OK);
     }
 
+    @DeleteMapping("/garment/trash")
+    public ResponseEntity<Garment> cleanTrash(@RequestHeader(name = "authToken") String authToken) throws GarmentException {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = session.getUser();
+
+        garmentService.cleanTrash(user);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/garment/trash/{id}")
+    public ResponseEntity<Garment> deleteGarmentInTrash(@PathVariable Long id, @RequestHeader(name = "authToken") String authToken) throws GarmentException {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = session.getUser();
+
+        Optional<Garment> optionalGarment = Optional.ofNullable(garmentService.getGarmentByIdAndUser(id, user));
+        if (!optionalGarment.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Garment garmentToDelete = optionalGarment.get();
+
+        try {
+            garmentService.deleteGarmentFromTrash(garmentToDelete.getId(), user);
+        } catch (GarmentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(garmentToDelete, HttpStatus.OK);
+
+    }
+
     @GetMapping({"/garments/trash"})
     public ResponseEntity<List<Garment>> getAllGarmentsDeleted(@RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));

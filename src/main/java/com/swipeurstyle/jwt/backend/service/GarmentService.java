@@ -143,4 +143,33 @@ public class GarmentService {
         }
         return garmentRepository.save(garmentToUpdate);
     }
+
+    public void cleanTrash(User user) {
+        List<Garment> deletedGarments = getAllGarmentsDeletedByUser(user);
+        for (Garment garment : deletedGarments) {
+            garmentRepository.delete(garment);
+        }
+    }
+
+    public void deleteGarmentFromTrash(Long garmentId, User user) throws GarmentException {
+        List<Garment> garments = getAllGarmentsCreatedByUser(user);
+        Garment garmentToDelete = null;
+        for (Garment garment : garments) {
+            if (garment.getId().equals(garmentId)) {
+                garmentToDelete = garment;
+                break;
+            }
+        }
+        if (garmentToDelete == null) {
+            throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
+        }
+
+        if (garmentToDelete.getGarmentState().equals(GarmentState.CREATED)){
+            throw new GarmentException(GarmentException.GARMENT_NOT_IN_TRASH);
+        }
+
+        garmentRepository.delete(garmentToDelete);
+    }
+
+
 }
