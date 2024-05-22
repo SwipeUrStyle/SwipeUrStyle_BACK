@@ -1,5 +1,6 @@
 package com.swipeurstyle.jwt.backend.controller;
 
+import com.swipeurstyle.jwt.backend.entity.Garment;
 import com.swipeurstyle.jwt.backend.entity.Gender;
 import com.swipeurstyle.jwt.backend.entity.Session;
 import com.swipeurstyle.jwt.backend.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -91,5 +93,15 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping({"/user"})
+    public ResponseEntity<User> getUserInformation(@RequestHeader(name = "authToken") String authToken) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        User user = session.getUser();
+        return new ResponseEntity<>(user, HttpStatus.FOUND);
     }
 }
