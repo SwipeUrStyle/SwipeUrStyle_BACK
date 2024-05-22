@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class GarmentService {
@@ -122,5 +123,20 @@ public class GarmentService {
             }
         }
         return garmentsByCategory;
+    }
+
+    public Garment updateGarmentByUser(Garment update, User user) {
+        List<Garment> garments = getAllGarmentsByUser(user);
+        Garment garmentToUpdate = null;
+        for (Garment garment : garments) {
+            if (garment.getId().equals(update.getId())) {
+                garmentToUpdate = garment;
+                break;
+            }
+        }
+        if (garmentToUpdate == null) {
+            throw new NoSuchElementException("Garment with id " + update.getId() + " not found for user " + user.getEmail());
+        }
+        return garmentRepository.save(garmentToUpdate);
     }
 }

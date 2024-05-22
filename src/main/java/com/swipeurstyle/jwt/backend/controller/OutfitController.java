@@ -87,6 +87,16 @@ public class OutfitController {
         return new ResponseEntity<>(outfitService.getAllNotScheduledOutfits(user), HttpStatus.FOUND);
     }
 
+    @GetMapping({"/outfits/favorites"})
+    public ResponseEntity<List<Outfit>> getAllOFavoriteOutfits(@RequestHeader(name = "authToken") String authToken) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        User user = session.getUser();
+        return new ResponseEntity<>(outfitService.getAllFavoriteOutfits(user), HttpStatus.FOUND);
+    }
+
     @DeleteMapping("/outfit/{id}")
     public ResponseEntity<Outfit> deleteOutfit(@PathVariable Long id, @RequestHeader(name = "authToken") String authToken) {
         Session session = sessionRepository.findByToken(UUID.fromString(authToken));
@@ -103,9 +113,9 @@ public class OutfitController {
 
         Outfit outfitToDelete = optionalOutfit.get();
 
-        outfitService.deleteOutfitByUser(user, outfitToDelete.getId());
+        Outfit deletedOutfit = outfitService.deleteOutfitByUser(user, outfitToDelete.getId());
 
-        return new ResponseEntity<>(outfitToDelete, HttpStatus.OK);
+        return new ResponseEntity<>(deletedOutfit, HttpStatus.OK);
     }
 
     @PatchMapping("/outfit/{id}")
@@ -124,46 +134,48 @@ public class OutfitController {
         if (outfit == null) {
             return ResponseEntity.notFound().build();
         }
-        updates.forEach((key, value) -> {
-            switch (key) {
-                case "top":
-                    Garment top = null;
-                    try {
-                        top = garmentService.getGarmentByIdAndUser((Long) value, user);
-                    } catch (GarmentException e) {
-                        throw new RuntimeException(e);
-                    }
-                    outfit.setTop(top);
-                    break;
-                case "bottom":
-                    Garment bottom = null;
-                    try {
-                        bottom = garmentService.getGarmentByIdAndUser((Long) value, user);
-                    } catch (GarmentException e) {
-                        throw new RuntimeException(e);
-                    }
-                    outfit.setBottom(bottom);
-                    break;
-                case "shoes":
-                    Garment shoes = null;
-                    try {
-                        shoes = garmentService.getGarmentByIdAndUser((Long) value, user);
-                    } catch (GarmentException e) {
-                        throw new RuntimeException(e);
-                    }
-                    outfit.setShoes(shoes);
-                    break;
-                case "scheduled":
-                    boolean scheduled = (boolean) value;
-                    outfit.setScheduled(scheduled);
-                    break;
-                case "scheduledFor":
-                    LocalDate scheduledFor = (LocalDate) value;
-                    outfit.setScheduledFor(scheduledFor);
-                    break;
+
+        try {
+            for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                switch (key) {
+                    case "top":
+                        Garment top = garmentService.getGarmentByIdAndUser(Long.parseLong(value.toString()), user);
+                        outfit.setTop(top);
+                        break;
+                    case "bottom":
+                        Garment bottom = garmentService.getGarmentByIdAndUser(Long.parseLong(value.toString()), user);
+                        outfit.setBottom(bottom);
+                        break;
+                    case "shoes":
+                        Garment shoes = garmentService.getGarmentByIdAndUser(Long.parseLong(value.toString()), user);
+                        outfit.setShoes(shoes);
+                        break;
+                    case "scheduled":
+                        boolean scheduled = Boolean.parseBoolean(value.toString());
+                        outfit.setScheduled(scheduled);
+                        break;
+                    case "scheduledFor":
+                        LocalDate scheduledFor = LocalDate.parse(value.toString());
+                        outfit.setScheduledFor(scheduledFor);
+                        break;
+                    case "favorite":
+                        boolean favorite = Boolean.parseBoolean(value.toString());
+                        outfit.setFavorite(favorite);
+                        break;
+                    default:
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
             }
-        });
-        Outfit updatedOutfit = outfitService.updateOutfitByUser(outfit, user);
-        return ResponseEntity.ok(updatedOutfit);
+            Outfit updatedOutfit = outfitService.updateOutfitByUser(outfit, user);
+            return ResponseEntity.ok(updatedOutfit);
+        } catch (GarmentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 }

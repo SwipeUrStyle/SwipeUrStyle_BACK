@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -136,6 +137,77 @@ public class GarmentController {
 
         return new ResponseEntity<>(garmentService.restoreGarment(garmentDeleted.getId(), user), HttpStatus.OK);
     }
+
+    @PatchMapping("/garment/{id}")
+    public ResponseEntity<Garment> partialUpdateOutfit(
+            @PathVariable("id") Long garmentId,
+            @RequestBody Map<String, Object> updates,
+            @RequestHeader(name = "authToken") String authToken
+    ) {
+        Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = session.getUser();
+        Garment garment;
+        try {
+            garment = garmentService.getGarmentByIdAndUser(garmentId, user);
+        } catch (GarmentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (garment == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                switch (key) {
+                    case "name":
+                        garment.setName((String) value);
+                        break;
+                    case "description":
+                        garment.setDescription((String) value);
+                        break;
+                    case "category":
+                        GarmentCategory garmentCategory;
+                        switch ((String) value) {
+                            case "TOP":
+                                garmentCategory = GarmentCategory.TOP;
+                                break;
+                            case "BOTTOM":
+                                garmentCategory = GarmentCategory.BOTTOM;
+                                break;
+                            case "SHOES":
+                                garmentCategory = GarmentCategory.SHOES;
+                                break;
+                            default:
+                                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        }
+                        garment.setCategory(garmentCategory);
+                        break;
+                    case "imageName":
+                        byte[] imageData = storageService.downloadImage((String) value);
+                        if (imageData.length == 0) {
+                            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        }
+                        garment.setImageName((String) value);
+                        break;
+                    default:
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            }
+            Garment updatedGarment = garmentService.updateGarmentByUser(garment, user);
+            return ResponseEntity.ok(updatedGarment);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 }

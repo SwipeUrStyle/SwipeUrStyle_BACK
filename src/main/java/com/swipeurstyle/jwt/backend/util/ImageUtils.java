@@ -1,11 +1,17 @@
 package com.swipeurstyle.jwt.backend.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+
 public class ImageUtils {
 
+
+    private ImageUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static byte[] compressImage(byte[] data) {
         Deflater deflater = new Deflater();
@@ -21,10 +27,12 @@ public class ImageUtils {
         }
         try {
             outputStream.close();
-        } catch (Exception ignored) {
+        } catch (IOException e) {
+            e.printStackTrace(); // Registra la excepción
         }
         return outputStream.toByteArray();
     }
+
 
 
     public static byte[] decompressImage(byte[] data) {
@@ -38,9 +46,11 @@ public class ImageUtils {
                 outputStream.write(tmp, 0, count);
             }
             outputStream.close();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace(); // Registra la excepción
         }
         return outputStream.toByteArray();
     }
+
 
 }
