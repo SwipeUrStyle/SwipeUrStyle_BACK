@@ -39,5 +39,7 @@ public class Outfit {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate scheduledFor;
 
+    private boolean favorite;
+
 
 }

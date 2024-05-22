@@ -74,12 +74,11 @@ public class OutfitService {
 
 
     public Outfit updateOutfitToScheduled(LocalDate scheduledFor, Outfit outfit, User user) {
-        if (outfitRepository.findById(outfit.getId()).isPresent()) {
-            if (outfit.getUser().equals(user)) {
-                outfit.setScheduled(true);
-                outfit.setScheduledFor(scheduledFor);
-                return outfitRepository.save(outfit);
-            }
+        if (outfitRepository.findById(outfit.getId()).isPresent() && outfit.getUser().equals(user)) {
+            outfit.setScheduled(true);
+            outfit.setScheduledFor(scheduledFor);
+            return outfitRepository.save(outfit);
+
         }
         return null;
     }
@@ -106,13 +105,22 @@ public class OutfitService {
         return notScheduledOutfits;
     }
 
+    public List<Outfit> getAllFavoriteOutfits(User user) {
+        List<Outfit> outfits = getAllOutfitsByUser(user);
+        List<Outfit> favoriteOutfits = new ArrayList<>();
+        for (Outfit outfit : outfits) {
+            if (outfit.isFavorite()) {
+                favoriteOutfits.add(outfit);
+            }
+        }
+        return favoriteOutfits;
+    }
+
     public Outfit deleteOutfitByUser(User user, Long id) {
         Optional<Outfit> outfitToDelete = outfitRepository.findById(id);
-        if (outfitToDelete.isPresent()) {
-            if (outfitToDelete.get().getUser().equals(user)) {
-                outfitRepository.delete(outfitToDelete.get());
-                return outfitToDelete.get();
-            }
+        if (outfitToDelete.isPresent() && outfitToDelete.get().getUser().equals(user)) {
+            outfitRepository.delete(outfitToDelete.get());
+            return outfitToDelete.get();
         }
         return null;
     }
