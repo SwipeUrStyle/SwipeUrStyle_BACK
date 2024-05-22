@@ -17,11 +17,14 @@ import java.util.zip.DataFormatException;
 @Service
 public class StorageService {
 
-    @Autowired
-    private StorageRepository repository;
+    private final StorageRepository repository;
+    private final FileDataRepository fileDataRepository;
 
     @Autowired
-    private FileDataRepository fileDataRepository;
+    public StorageService(StorageRepository repository, FileDataRepository fileDataRepository) {
+        this.repository = repository;
+        this.fileDataRepository = fileDataRepository;
+    }
 
     public Optional<FileData> loadImageFromName(String name) {
         return fileDataRepository.findByName(name);
@@ -31,7 +34,7 @@ public class StorageService {
         ImageData imageData = repository.save(ImageData.builder()
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
-                .imageData(ImageUtils.compressImage(file.getBytes())).build());
+                .data(ImageUtils.compressImage(file.getBytes())).build());
         if (imageData != null) {
             return "file uploaded successfully : " + file.getOriginalFilename();
         }
@@ -43,17 +46,13 @@ public class StorageService {
         Optional<ImageData> dbImageData = repository.findByName(fileName);
         if (dbImageData.isPresent()) {
             try {
-                return ImageUtils.decompressImage(dbImageData.get().getImageData());
+                return ImageUtils.decompressImage(dbImageData.get().getData());
             } catch (IOException | DataFormatException e) {
                 throw new ImageProcessingException("Error decompressing image data", e);
             }
         }
-        return null;
+        return new byte[0];
     }
-
-
-
-
 
     public String deleteImage(String name) {
         Optional<ImageData> dbImageData = repository.findByName(name);

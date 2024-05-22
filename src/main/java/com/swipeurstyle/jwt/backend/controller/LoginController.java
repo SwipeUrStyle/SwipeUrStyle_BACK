@@ -39,7 +39,6 @@ public class LoginController {
     @PostMapping("")
     public ResponseEntity<LoginResponse> loginSubmit(@RequestBody LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getUserEmail());
-        System.out.println("user" + user);
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } else if (!user.getPassword().equals(loginRequest.getUserPassword())) {

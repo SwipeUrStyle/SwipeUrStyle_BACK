@@ -50,7 +50,7 @@ public class ImageController {
         try {
             imageData = service.downloadImage(fileName);
         } catch (ImageProcessingException e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
