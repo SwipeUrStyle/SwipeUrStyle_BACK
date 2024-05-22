@@ -2,6 +2,8 @@ package com.swipeurstyle.jwt.backend.controller;
 
 
 import com.swipeurstyle.jwt.backend.entity.*;
+import com.swipeurstyle.jwt.backend.exception.GarmentException;
+import com.swipeurstyle.jwt.backend.exception.ImageProcessingException;
 import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.service.GarmentService;
 import com.swipeurstyle.jwt.backend.service.StorageService;
@@ -39,7 +41,12 @@ public class GarmentController {
         }
         User user = session.getUser();
         Garment garment = new Garment();
-        byte[] imageData = storageService.downloadImage(garmentRequest.getImageName());
+        byte[] imageData = new byte[0];
+        try {
+            imageData = storageService.downloadImage(garmentRequest.getImageName());
+        } catch (ImageProcessingException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         if (imageData.length == 0) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

@@ -1,6 +1,7 @@
 package com.swipeurstyle.jwt.backend.controller;
 
 import com.swipeurstyle.jwt.backend.entity.*;
+import com.swipeurstyle.jwt.backend.exception.GarmentException;
 import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.service.GarmentService;
 import com.swipeurstyle.jwt.backend.service.OutfitService;

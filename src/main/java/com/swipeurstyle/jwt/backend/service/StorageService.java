@@ -2,6 +2,7 @@ package com.swipeurstyle.jwt.backend.service;
 
 import com.swipeurstyle.jwt.backend.entity.FileData;
 import com.swipeurstyle.jwt.backend.entity.ImageData;
+import com.swipeurstyle.jwt.backend.exception.ImageProcessingException;
 import com.swipeurstyle.jwt.backend.repository.FileDataRepository;
 import com.swipeurstyle.jwt.backend.repository.StorageRepository;
 import com.swipeurstyle.jwt.backend.util.ImageUtils;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 @Service
 public class StorageService {
@@ -37,10 +39,19 @@ public class StorageService {
     }
 
 
-    public byte[] downloadImage(String fileName) {
+    public byte[] downloadImage(String fileName) throws ImageProcessingException {
         Optional<ImageData> dbImageData = repository.findByName(fileName);
-        return dbImageData.map(imageData -> ImageUtils.decompressImage(imageData.getImageData())).orElse(null);
+        if (dbImageData.isPresent()) {
+            try {
+                return ImageUtils.decompressImage(dbImageData.get().getImageData());
+            } catch (IOException | DataFormatException e) {
+                throw new ImageProcessingException("Error decompressing image data", e);
+            }
+        }
+        return null;
     }
+
+
 
 
 

@@ -1,6 +1,7 @@
 package com.swipeurstyle.jwt.backend.controller;
 
 import com.swipeurstyle.jwt.backend.entity.Session;
+import com.swipeurstyle.jwt.backend.exception.ImageProcessingException;
 import com.swipeurstyle.jwt.backend.repository.SessionRepository;
 import com.swipeurstyle.jwt.backend.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,12 @@ public class ImageController {
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        byte[] imageData = service.downloadImage(fileName);
+        byte[] imageData = new byte[0];
+        try {
+            imageData = service.downloadImage(fileName);
+        } catch (ImageProcessingException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
                 .body(imageData);
