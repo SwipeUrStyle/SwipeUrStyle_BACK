@@ -285,7 +285,7 @@ class OutfitServiceTest {
         // Verificar que el outfit se haya eliminado correctamente y devuelto
         assertNotNull(deletedOutfit);
         assertEquals(1L, deletedOutfit.getId().longValue());
-        verify(outfitRepositoryMock, times(1)).delete(outfitToDelete);
+        verify(outfitRepositoryMock, times(1)).save(outfitToDelete);
     }
 
     @Test

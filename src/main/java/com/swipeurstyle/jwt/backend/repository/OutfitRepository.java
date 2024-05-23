@@ -11,7 +11,8 @@ import java.util.List;
 @Repository
 public interface OutfitRepository extends CrudRepository<Outfit, Long> {
     List<Outfit> findByUser(User user);
-    void deleteByTop(Garment top);
-    void deleteByBottom(Garment bottom);
-    void deleteByShoes(Garment shoes);
+
+    List<Outfit> findByTop(Garment garment);
+    List<Outfit> findByBottom(Garment garment);
+    List<Outfit> findByShoes(Garment garment);
 }

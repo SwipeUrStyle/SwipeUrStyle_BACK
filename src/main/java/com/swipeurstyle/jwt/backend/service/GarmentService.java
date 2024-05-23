@@ -1,9 +1,6 @@
 package com.swipeurstyle.jwt.backend.service;
 
-import com.swipeurstyle.jwt.backend.entity.Garment;
-import com.swipeurstyle.jwt.backend.entity.GarmentCategory;
-import com.swipeurstyle.jwt.backend.entity.GarmentState;
-import com.swipeurstyle.jwt.backend.entity.User;
+import com.swipeurstyle.jwt.backend.entity.*;
 import com.swipeurstyle.jwt.backend.exception.GarmentException;
 import com.swipeurstyle.jwt.backend.repository.GarmentRepository;
 import com.swipeurstyle.jwt.backend.repository.OutfitRepository;
@@ -40,7 +37,7 @@ public class GarmentService {
         List<Garment> garments = getAllGarmentsByUser(user);
         List<Garment> garmentCreated = new ArrayList<>();
         for (Garment garment : garments) {
-            if (garment.getGarmentState().equals(GarmentState.CREATED)) {
+            if (garment.getGarmentState().equals(GarmentState.CREATED) && garment.isEnabled()) {
                 garmentCreated.add(garment);
             }
         }
@@ -51,7 +48,7 @@ public class GarmentService {
         List<Garment> garments = garmentRepository.findByUser(user);
         List<Garment> garmentDeleted = new ArrayList<>();
         for (Garment garment : garments) {
-            if (garment.getGarmentState().equals(GarmentState.DELETED)) {
+            if (garment.getGarmentState().equals(GarmentState.DELETED) && garment.isEnabled()) {
                 garmentDeleted.add(garment);
             }
         }
@@ -67,7 +64,7 @@ public class GarmentService {
         List<Garment> garments = getAllGarmentsByUser(user);
         Garment garmentToFind = null;
         for (Garment garment : garments) {
-            if (garment.getId().equals(garmentId)) {
+            if (garment.getId().equals(garmentId) && garment.isEnabled()) {
                 garmentToFind = garment;
                 break;
             }
@@ -83,7 +80,7 @@ public class GarmentService {
         List<Garment> garments = getAllGarmentsCreatedByUser(user);
         Garment garmentToDelete = null;
         for (Garment garment : garments) {
-            if (garment.getId().equals(garmentId)) {
+            if (garment.getId().equals(garmentId) && garment.isEnabled()) {
                 garmentToDelete = garment;
                 break;
             }
@@ -110,7 +107,12 @@ public class GarmentService {
     public void cleanGarmentDeleted() {
         // Lógica para limpiar la papelera temporal
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
-        garmentRepository.deleteByDeletedAtBefore(thirtyDaysAgo);
+        List<Garment> garments = garmentRepository.findByDeletedAtBefore(thirtyDaysAgo);
+        for (Garment garment : garments) {
+            deleteOutfitsAssociated(garment);
+            garment.setEnabled(false);
+            garmentRepository.save(garment);
+        }
     }
 
     public Garment restoreGarment(Long garmentId, User user) throws GarmentException {
@@ -120,6 +122,9 @@ public class GarmentService {
         }
         if (garmentToRestore.getGarmentState().equals(GarmentState.CREATED)) {
             throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
+        }
+        if (!garmentToRestore.isEnabled()){
+            return null;
         }
         garmentToRestore.setGarmentState(GarmentState.CREATED);
         garmentToRestore.setDeletedAt(null);
@@ -131,7 +136,7 @@ public class GarmentService {
         List<Garment> garments = getAllGarmentsByUser(user);
         List<Garment> garmentsByCategory = new ArrayList<>();
         for (Garment garment : garments) {
-            if (garment.getCategory().equals(category)) {
+            if (garment.getCategory().equals(category) && garment.isEnabled()) {
                 garmentsByCategory.add(garment);
             }
         }
@@ -142,7 +147,7 @@ public class GarmentService {
         List<Garment> garments = getAllGarmentsByUser(user);
         Garment garmentToUpdate = null;
         for (Garment garment : garments) {
-            if (garment.getId().equals(update.getId())) {
+            if (garment.getId().equals(update.getId()) && garment.isEnabled()) {
                 garmentToUpdate = garment;
                 break;
             }
@@ -160,7 +165,8 @@ public class GarmentService {
 
             String imageName = garment.getImageName();
             storageService.deleteImage(imageName);
-            garmentRepository.delete(garment);
+            garment.setEnabled(false);
+            garmentRepository.save(garment);
         }
     }
 
@@ -168,7 +174,7 @@ public class GarmentService {
         List<Garment> garments = getAllGarmentsDeletedByUser(user);
         Garment garmentToDelete = null;
         for (Garment garment : garments) {
-            if (garment.getId().equals(garmentId)) {
+            if (garment.getId().equals(garmentId) && garment.isEnabled()) {
                 garmentToDelete = garment;
                 break;
             }
@@ -181,7 +187,8 @@ public class GarmentService {
 
         String imageName = garmentToDelete.getImageName();
         storageService.deleteImage(imageName);
-        garmentRepository.delete(garmentToDelete);
+        garmentToDelete.setEnabled(false);
+        garmentRepository.save(garmentToDelete);
     }
 
     private void deleteOutfitsAssociated(Garment garment) {
@@ -190,13 +197,25 @@ public class GarmentService {
         }
         switch (garment.getCategory()) {
             case TOP:
-                outfitRepository.deleteByTop(garment);
+                List<Outfit> outfitsTops = outfitRepository.findByTop(garment);
+                for (Outfit outfit: outfitsTops) {
+                    outfit.setEnabled(false);
+                    outfitRepository.save(outfit);
+                }
                 break;
             case BOTTOM:
-                outfitRepository.deleteByBottom(garment);
+                List<Outfit> outfitsBottoms = outfitRepository.findByBottom(garment);
+                for (Outfit outfit: outfitsBottoms) {
+                    outfit.setEnabled(false);
+                    outfitRepository.save(outfit);
+                }
                 break;
             case SHOES:
-                outfitRepository.deleteByShoes(garment);
+                List<Outfit> outfitsShoes = outfitRepository.findByShoes(garment);
+                for (Outfit outfit: outfitsShoes) {
+                    outfit.setEnabled(false);
+                    outfitRepository.save(outfit);
+                }
                 break;
         }
     }

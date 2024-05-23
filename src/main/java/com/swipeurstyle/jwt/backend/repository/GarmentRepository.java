@@ -16,4 +16,6 @@ public interface GarmentRepository extends CrudRepository<Garment, Long> {
     void deleteByDeletedAtBefore(LocalDateTime date);
 
 
+    List<Garment> findByDeletedAtBefore(LocalDateTime date);
+
 }

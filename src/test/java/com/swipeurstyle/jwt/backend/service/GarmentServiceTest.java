@@ -210,9 +210,7 @@ class GarmentServiceTest {
         // Simulate the behavior of the repository
         when(garmentRepositoryMock.findByUser(user)).thenReturn(List.of(garment1));
         when(garmentRepositoryMock.save(any(Garment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        // Simulate the behavior of the repository of outfits
-        doNothing().when(outfitRepositoryMock).deleteByTop(garment1);
+        when(outfitRepositoryMock.findByTop(garment1)).thenReturn(Collections.emptyList());
 
         // Call the method of the service you want to test
         Garment deletedGarment = garmentService.deleteGarmentByUser(1L, user);
@@ -224,8 +222,10 @@ class GarmentServiceTest {
 
         // Verify that the simulated methods were called
         verify(garmentRepositoryMock).save(garment1);
-        verify(outfitRepositoryMock).deleteByTop(garment1);
+        verify(outfitRepositoryMock).findByTop(garment1);
+        verify(outfitRepositoryMock, never()).save(any());
     }
+
 
     @Test
     void testDeleteGarmentByUser_BottomGarmentFound() throws GarmentException {
@@ -239,9 +239,7 @@ class GarmentServiceTest {
         // Simulate the behavior of the repository
         when(garmentRepositoryMock.findByUser(user)).thenReturn(List.of(garment1));
         when(garmentRepositoryMock.save(any(Garment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        // Simulate the behavior of the repository of outfits
-        doNothing().when(outfitRepositoryMock).deleteByBottom(garment1);
+        when(outfitRepositoryMock.findByBottom(garment1)).thenReturn(Collections.emptyList());
 
         // Call the method of the service you want to test
         Garment deletedGarment = garmentService.deleteGarmentByUser(1L, user);
@@ -253,7 +251,8 @@ class GarmentServiceTest {
 
         // Verify that the simulated methods were called
         verify(garmentRepositoryMock).save(garment1);
-        verify(outfitRepositoryMock).deleteByBottom(garment1);
+        verify(outfitRepositoryMock).findByBottom(garment1);
+        verify(outfitRepositoryMock, never()).save(any());
     }
 
     @Test
@@ -268,9 +267,7 @@ class GarmentServiceTest {
         // Simulate the behavior of the repository
         when(garmentRepositoryMock.findByUser(user)).thenReturn(List.of(garment1));
         when(garmentRepositoryMock.save(any(Garment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        // Simulate the behavior of the repository of outfits
-        doNothing().when(outfitRepositoryMock).deleteByShoes(garment1);
+        when(outfitRepositoryMock.findByShoes(garment1)).thenReturn(Collections.emptyList());
 
         // Call the method of the service you want to test
         Garment deletedGarment = garmentService.deleteGarmentByUser(1L, user);
@@ -282,7 +279,8 @@ class GarmentServiceTest {
 
         // Verify that the simulated methods were called
         verify(garmentRepositoryMock).save(garment1);
-        verify(outfitRepositoryMock).deleteByShoes(garment1);
+        verify(outfitRepositoryMock).findByShoes(garment1);
+        verify(outfitRepositoryMock, never()).save(any());
     }
 
 
@@ -488,21 +486,22 @@ class GarmentServiceTest {
 
         // Simular el comportamiento del repositorio y el servicio de almacenamiento
         when(garmentRepositoryMock.findByUser(any(User.class))).thenReturn(deletedGarments);
-        doNothing().when(outfitRepositoryMock).deleteByTop(any());
-        doNothing().when(outfitRepositoryMock).deleteByBottom(any());
+        when(outfitRepositoryMock.findByTop(garment1)).thenReturn(Collections.emptyList());
+        when(outfitRepositoryMock.findByBottom(garment2)).thenReturn(Collections.emptyList());
 
         // Llamar al método del servicio que quieres probar
         garmentService.cleanTrash(new User());
 
         // Verificar que se hayan eliminado los outfits asociados
-        verify(outfitRepositoryMock, times(1)).deleteByTop(garment1);
-        verify(outfitRepositoryMock, times(1)).deleteByBottom(garment2);
+        verify(outfitRepositoryMock).findByTop(garment1);
+        verify(outfitRepositoryMock).findByBottom(garment2);
+        verify(outfitRepositoryMock, never()).save(any());
 
         // Verificar que se hayan eliminado las imágenes y los garments
         verify(storageServiceMock, times(1)).deleteImage("image1.jpg");
         verify(storageServiceMock, times(1)).deleteImage("image2.jpg");
-        verify(garmentRepositoryMock, times(1)).delete(garment1);
-        verify(garmentRepositoryMock, times(1)).delete(garment2);
+        verify(garmentRepositoryMock, times(1)).save(garment1);
+        verify(garmentRepositoryMock, times(1)).save(garment2);
 
     }
 
@@ -521,15 +520,16 @@ class GarmentServiceTest {
 
         // Simular el comportamiento del repositorio
         when(garmentRepositoryMock.findByUser(user)).thenReturn(Collections.singletonList(garment));
-        doNothing().when(outfitRepositoryMock).deleteByTop(garment);
+        when(outfitRepositoryMock.findByTop(garment)).thenReturn(Collections.emptyList());
 
         // Llamar al método del servicio que quieres probar
         garmentService.deleteGarmentFromTrash(1L, user);
 
         // Verificar que se eliminó la imagen y el garment en el repositorio
-        verify(outfitRepositoryMock, times(1)).deleteByTop(garment);
+        verify(outfitRepositoryMock).findByTop(garment);
+        verify(outfitRepositoryMock, never()).save(any());
         verify(storageServiceMock, times(1)).deleteImage(anyString());
-        verify(garmentRepositoryMock, times(1)).delete(any());
+        verify(garmentRepositoryMock, times(1)).save(any());
     }
 
     @Test
@@ -555,7 +555,7 @@ class GarmentServiceTest {
 
         // Verificar que no se intentó eliminar ninguna imagen ni ningún garment en el repositorio
         verify(storageServiceMock, never()).deleteImage(anyString());
-        verify(garmentRepositoryMock, never()).delete(any());
+        verify(garmentRepositoryMock, never()).save(any());
     }
 
 }

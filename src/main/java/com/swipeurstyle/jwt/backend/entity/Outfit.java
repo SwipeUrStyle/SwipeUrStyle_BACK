@@ -40,5 +40,7 @@ public class Outfit {
     private LocalDate scheduledFor;
 
     private boolean favorite;
+
+    private boolean enabled = true;
 }
 
