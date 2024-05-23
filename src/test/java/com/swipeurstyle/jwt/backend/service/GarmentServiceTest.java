@@ -6,6 +6,7 @@ import com.swipeurstyle.jwt.backend.entity.GarmentState;
 import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.exception.GarmentException;
 import com.swipeurstyle.jwt.backend.repository.GarmentRepository;
+import com.swipeurstyle.jwt.backend.repository.OutfitRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,9 @@ class GarmentServiceTest {
 
     @Mock
     private StorageService storageServiceMock;
+
+    @Mock
+    private OutfitRepository outfitRepositoryMock;
 
     @InjectMocks
     private GarmentService garmentService;
@@ -424,12 +428,21 @@ class GarmentServiceTest {
         // Llamar al método del servicio que quieres probar
         garmentService.cleanTrash(new User());
 
+        // Verificar que se hayan eliminado los outfits asociados
+        verify(outfitRepositoryMock, times(1)).deleteByTop(garment1);
+        verify(outfitRepositoryMock, times(1)).deleteByBottom(garment1);
+        verify(outfitRepositoryMock, times(1)).deleteByShoes(garment1);
+        verify(outfitRepositoryMock, times(1)).deleteByTop(garment2);
+        verify(outfitRepositoryMock, times(1)).deleteByBottom(garment2);
+        verify(outfitRepositoryMock, times(1)).deleteByShoes(garment2);
+
         // Verificar que se hayan eliminado las imágenes y los garments
         verify(storageServiceMock, times(1)).deleteImage("image1.jpg");
         verify(storageServiceMock, times(1)).deleteImage("image2.jpg");
         verify(garmentRepositoryMock, times(1)).delete(garment1);
         verify(garmentRepositoryMock, times(1)).delete(garment2);
     }
+
 
     @Test
     void testDeleteGarmentFromTrash_Success() throws GarmentException {

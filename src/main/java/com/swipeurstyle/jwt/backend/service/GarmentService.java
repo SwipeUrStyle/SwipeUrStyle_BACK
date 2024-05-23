@@ -6,6 +6,7 @@ import com.swipeurstyle.jwt.backend.entity.GarmentState;
 import com.swipeurstyle.jwt.backend.entity.User;
 import com.swipeurstyle.jwt.backend.exception.GarmentException;
 import com.swipeurstyle.jwt.backend.repository.GarmentRepository;
+import com.swipeurstyle.jwt.backend.repository.OutfitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,13 @@ public class GarmentService {
     private final GarmentRepository garmentRepository;
     private final StorageService storageService;
 
+    private final OutfitRepository outfitRepository;
+
     @Autowired
-    public GarmentService(GarmentRepository garmentRepository, StorageService storageService) {
+    public GarmentService(GarmentRepository garmentRepository, StorageService storageService, OutfitRepository outfitRepository) {
         this.garmentRepository = garmentRepository;
         this.storageService = storageService;
+        this.outfitRepository = outfitRepository;
     }
 
     public Garment addNewGarment(Garment garment) {
@@ -88,6 +92,12 @@ public class GarmentService {
             throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
 
+        // Eliminar todos los conjuntos que contienen esta prenda
+        outfitRepository.deleteByTop(garmentToDelete);
+        outfitRepository.deleteByBottom(garmentToDelete);
+        outfitRepository.deleteByShoes(garmentToDelete);
+
+
         garmentToDelete.setGarmentState(GarmentState.DELETED);
         garmentToDelete.setDeletedAt(LocalDateTime.now());
 
@@ -149,6 +159,11 @@ public class GarmentService {
     public void cleanTrash(User user) {
         List<Garment> deletedGarments = getAllGarmentsDeletedByUser(user);
         for (Garment garment : deletedGarments) {
+            // Eliminar todos los conjuntos asociados
+            outfitRepository.deleteByTop(garment);
+            outfitRepository.deleteByBottom(garment);
+            outfitRepository.deleteByShoes(garment);
+
             String imageName = garment.getImageName();
             storageService.deleteImage(imageName);
             garmentRepository.delete(garment);

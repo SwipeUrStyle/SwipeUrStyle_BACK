@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,5 +29,13 @@ public class Garment {
     @Column(nullable = true)
     private LocalDateTime deletedAt;
 
+    @OneToMany(mappedBy = "top")
+    private List<Outfit> outfitsWithTop = new ArrayList<>();
 
+    @OneToMany(mappedBy = "bottom")
+    private List<Outfit> outfitsWithBottom = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shoes")
+    private List<Outfit> outfitsWithShoes = new ArrayList<>();
 }
+
