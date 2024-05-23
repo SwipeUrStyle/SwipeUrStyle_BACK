@@ -199,31 +199,93 @@ class GarmentServiceTest {
     }
 
     @Test
-    void testDeleteGarmentByUser_GarmentFound() throws GarmentException {
-
-        // Crear una lista de garments de ejemplo
+    void testDeleteGarmentByUser_TopGarmentFound() throws GarmentException {
+        // Create a garment example
         Garment garment1 = new Garment();
         garment1.setId(1L);
         garment1.setUser(user);
+        garment1.setCategory(GarmentCategory.TOP);
         garment1.setGarmentState(GarmentState.CREATED);
 
-        Garment garment2 = new Garment();
-        garment2.setId(2L);
-        garment2.setUser(user);
-        garment2.setGarmentState(GarmentState.CREATED);
-
-        // Simular el comportamiento del repositorio
-        when(garmentRepositoryMock.findByUser(user)).thenReturn(Arrays.asList(garment1, garment2));
+        // Simulate the behavior of the repository
+        when(garmentRepositoryMock.findByUser(user)).thenReturn(List.of(garment1));
         when(garmentRepositoryMock.save(any(Garment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Llamar al método del servicio que quieres probar
+        // Simulate the behavior of the repository of outfits
+        doNothing().when(outfitRepositoryMock).deleteByTop(garment1);
+
+        // Call the method of the service you want to test
         Garment deletedGarment = garmentService.deleteGarmentByUser(1L, user);
 
-        // Verificar el resultado
+        // Verify the result
         assertNotNull(deletedGarment);
         assertEquals(GarmentState.DELETED, deletedGarment.getGarmentState());
         assertNotNull(deletedGarment.getDeletedAt());
+
+        // Verify that the simulated methods were called
+        verify(garmentRepositoryMock).save(garment1);
+        verify(outfitRepositoryMock).deleteByTop(garment1);
     }
+
+    @Test
+    void testDeleteGarmentByUser_BottomGarmentFound() throws GarmentException {
+        // Create a garment example
+        Garment garment1 = new Garment();
+        garment1.setId(1L);
+        garment1.setUser(user);
+        garment1.setCategory(GarmentCategory.BOTTOM);
+        garment1.setGarmentState(GarmentState.CREATED);
+
+        // Simulate the behavior of the repository
+        when(garmentRepositoryMock.findByUser(user)).thenReturn(List.of(garment1));
+        when(garmentRepositoryMock.save(any(Garment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Simulate the behavior of the repository of outfits
+        doNothing().when(outfitRepositoryMock).deleteByBottom(garment1);
+
+        // Call the method of the service you want to test
+        Garment deletedGarment = garmentService.deleteGarmentByUser(1L, user);
+
+        // Verify the result
+        assertNotNull(deletedGarment);
+        assertEquals(GarmentState.DELETED, deletedGarment.getGarmentState());
+        assertNotNull(deletedGarment.getDeletedAt());
+
+        // Verify that the simulated methods were called
+        verify(garmentRepositoryMock).save(garment1);
+        verify(outfitRepositoryMock).deleteByBottom(garment1);
+    }
+
+    @Test
+    void testDeleteGarmentByUser_ShoesGarmentFound() throws GarmentException {
+        // Create a garment example
+        Garment garment1 = new Garment();
+        garment1.setId(1L);
+        garment1.setUser(user);
+        garment1.setCategory(GarmentCategory.SHOES);
+        garment1.setGarmentState(GarmentState.CREATED);
+
+        // Simulate the behavior of the repository
+        when(garmentRepositoryMock.findByUser(user)).thenReturn(List.of(garment1));
+        when(garmentRepositoryMock.save(any(Garment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Simulate the behavior of the repository of outfits
+        doNothing().when(outfitRepositoryMock).deleteByShoes(garment1);
+
+        // Call the method of the service you want to test
+        Garment deletedGarment = garmentService.deleteGarmentByUser(1L, user);
+
+        // Verify the result
+        assertNotNull(deletedGarment);
+        assertEquals(GarmentState.DELETED, deletedGarment.getGarmentState());
+        assertNotNull(deletedGarment.getDeletedAt());
+
+        // Verify that the simulated methods were called
+        verify(garmentRepositoryMock).save(garment1);
+        verify(outfitRepositoryMock).deleteByShoes(garment1);
+    }
+
+
 
     @Test
     void testDeleteGarmentByUser_GarmentNotFound() {
@@ -413,6 +475,7 @@ class GarmentServiceTest {
         garment1.setName("Garment 1");
         garment1.setGarmentState(GarmentState.DELETED);
         garment1.setImageName("image1.jpg");
+        garment1.setCategory(GarmentCategory.TOP);
         deletedGarments.add(garment1);
 
         Garment garment2 = new Garment();
@@ -420,27 +483,27 @@ class GarmentServiceTest {
         garment2.setName("Garment 2");
         garment2.setGarmentState(GarmentState.DELETED);
         garment2.setImageName("image2.jpg");
+        garment2.setCategory(GarmentCategory.BOTTOM);
         deletedGarments.add(garment2);
 
         // Simular el comportamiento del repositorio y el servicio de almacenamiento
         when(garmentRepositoryMock.findByUser(any(User.class))).thenReturn(deletedGarments);
+        doNothing().when(outfitRepositoryMock).deleteByTop(any());
+        doNothing().when(outfitRepositoryMock).deleteByBottom(any());
 
         // Llamar al método del servicio que quieres probar
         garmentService.cleanTrash(new User());
 
         // Verificar que se hayan eliminado los outfits asociados
         verify(outfitRepositoryMock, times(1)).deleteByTop(garment1);
-        verify(outfitRepositoryMock, times(1)).deleteByBottom(garment1);
-        verify(outfitRepositoryMock, times(1)).deleteByShoes(garment1);
-        verify(outfitRepositoryMock, times(1)).deleteByTop(garment2);
         verify(outfitRepositoryMock, times(1)).deleteByBottom(garment2);
-        verify(outfitRepositoryMock, times(1)).deleteByShoes(garment2);
 
         // Verificar que se hayan eliminado las imágenes y los garments
         verify(storageServiceMock, times(1)).deleteImage("image1.jpg");
         verify(storageServiceMock, times(1)).deleteImage("image2.jpg");
         verify(garmentRepositoryMock, times(1)).delete(garment1);
         verify(garmentRepositoryMock, times(1)).delete(garment2);
+
     }
 
 
@@ -454,14 +517,17 @@ class GarmentServiceTest {
         garment.setGarmentState(GarmentState.DELETED);
         garment.setUser(user);
         garment.setImageName("image.jpg");
+        garment.setCategory(GarmentCategory.TOP);
 
         // Simular el comportamiento del repositorio
         when(garmentRepositoryMock.findByUser(user)).thenReturn(Collections.singletonList(garment));
+        doNothing().when(outfitRepositoryMock).deleteByTop(garment);
 
         // Llamar al método del servicio que quieres probar
         garmentService.deleteGarmentFromTrash(1L, user);
 
         // Verificar que se eliminó la imagen y el garment en el repositorio
+        verify(outfitRepositoryMock, times(1)).deleteByTop(garment);
         verify(storageServiceMock, times(1)).deleteImage(anyString());
         verify(garmentRepositoryMock, times(1)).delete(any());
     }

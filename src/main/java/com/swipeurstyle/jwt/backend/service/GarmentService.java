@@ -185,13 +185,21 @@ public class GarmentService {
     }
 
     private void deleteOutfitsAssociated(Garment garment) {
-        if (garment.getCategory().equals(GarmentCategory.TOP)){
-            outfitRepository.deleteByTop(garment);
-        } else if (garment.getCategory().equals(GarmentCategory.BOTTOM)) {
-            outfitRepository.deleteByBottom(garment);
-        } else if (garment.getCategory().equals(GarmentCategory.SHOES)) {
-            outfitRepository.deleteByShoes(garment);
+        if (garment.getCategory() == null) {
+            return; // No hacer nada si la categoría es null
+        }
+        switch (garment.getCategory()) {
+            case TOP:
+                outfitRepository.deleteByTop(garment);
+                break;
+            case BOTTOM:
+                outfitRepository.deleteByBottom(garment);
+                break;
+            case SHOES:
+                outfitRepository.deleteByShoes(garment);
+                break;
         }
     }
+
 
 }
