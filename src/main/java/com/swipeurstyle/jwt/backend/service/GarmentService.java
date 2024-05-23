@@ -90,7 +90,6 @@ public class GarmentService {
 
         garmentToDelete.setGarmentState(GarmentState.DELETED);
         garmentToDelete.setDeletedAt(LocalDateTime.now());
-        garmentToDelete.setDeletedAt(null);
 
 
         return garmentRepository.save(garmentToDelete);
@@ -116,6 +115,7 @@ public class GarmentService {
             throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
         }
         garmentToRestore.setGarmentState(GarmentState.CREATED);
+        garmentToRestore.setDeletedAt(null);
 
         return garmentRepository.save(garmentToRestore);
     }
@@ -156,7 +156,7 @@ public class GarmentService {
     }
 
     public void deleteGarmentFromTrash(Long garmentId, User user) throws GarmentException {
-        List<Garment> garments = getAllGarmentsCreatedByUser(user);
+        List<Garment> garments = getAllGarmentsDeletedByUser(user);
         Garment garmentToDelete = null;
         for (Garment garment : garments) {
             if (garment.getId().equals(garmentId)) {
@@ -165,10 +165,6 @@ public class GarmentService {
             }
         }
         if (garmentToDelete == null) {
-            throw new GarmentException(GarmentException.GARMENT_NOT_FOUND + user.getEmail());
-        }
-
-        if (garmentToDelete.getGarmentState().equals(GarmentState.CREATED)){
             throw new GarmentException(GarmentException.GARMENT_NOT_IN_TRASH);
         }
 
@@ -176,6 +172,5 @@ public class GarmentService {
         storageService.deleteImage(imageName);
         garmentRepository.delete(garmentToDelete);
     }
-
 
 }

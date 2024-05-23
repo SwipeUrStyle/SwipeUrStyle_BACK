@@ -18,7 +18,7 @@ public class Garment {
     @Enumerated(EnumType.STRING)
     private GarmentCategory category;
     private String imageName;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private User user;
 
     @Enumerated(EnumType.STRING)
