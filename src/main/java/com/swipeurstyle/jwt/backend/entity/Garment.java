@@ -26,5 +26,7 @@ public class Garment {
 
     @Column(nullable = true)
     private LocalDateTime deletedAt;
+
+    private boolean enabled = true;
 }
 

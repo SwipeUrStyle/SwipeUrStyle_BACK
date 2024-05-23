@@ -28,7 +28,14 @@ public class OutfitService {
     }
 
     public List<Outfit> getAllOutfitsByUser(User user) {
-        return outfitRepository.findByUser(user);
+        List<Outfit> outfits = outfitRepository.findByUser(user);
+        List<Outfit> enabledOutfits = new ArrayList<>();
+        for (Outfit outfit : outfits){
+            if (outfit.isEnabled()){
+                enabledOutfits.add(outfit);
+            }
+        }
+        return enabledOutfits;
     }
 
     public Outfit addNewOutfit(List<Garment> garments, LocalDate scheduledFor, User user, boolean scheduled) {
@@ -77,7 +84,7 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         List<Outfit> scheduledOutfits = new ArrayList<>();
         for (Outfit outfit : outfits) {
-            if (outfit.isScheduled()) {
+            if (outfit.isScheduled() && outfit.isEnabled()) {
                 scheduledOutfits.add(outfit);
             }
         }
@@ -88,7 +95,7 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         List<Outfit> notScheduledOutfits = new ArrayList<>();
         for (Outfit outfit : outfits) {
-            if (!outfit.isScheduled()) {
+            if (!outfit.isScheduled() && outfit.isEnabled()) {
                 notScheduledOutfits.add(outfit);
             }
         }
@@ -99,7 +106,7 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         List<Outfit> favoriteOutfits = new ArrayList<>();
         for (Outfit outfit : outfits) {
-            if (outfit.isFavorite()) {
+            if (outfit.isFavorite() && outfit.isEnabled()) {
                 favoriteOutfits.add(outfit);
             }
         }
@@ -108,8 +115,9 @@ public class OutfitService {
 
     public Outfit deleteOutfitByUser(User user, Long id) {
         Optional<Outfit> outfitToDelete = outfitRepository.findById(id);
-        if (outfitToDelete.isPresent() && outfitToDelete.get().getUser().equals(user)) {
-            outfitRepository.delete(outfitToDelete.get());
+        if (outfitToDelete.isPresent() && outfitToDelete.get().getUser().equals(user) && outfitToDelete.get().isEnabled()) {
+            outfitToDelete.get().setEnabled(false);
+            outfitRepository.save(outfitToDelete.get());
             return outfitToDelete.get();
         }
         return null;
@@ -119,7 +127,7 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         Outfit outfitToFind = null;
         for (Outfit outfit : outfits) {
-            if (outfit.getId().equals(outfitId)) {
+            if (outfit.getId().equals(outfitId) && outfit.isEnabled()) {
                 outfitToFind = outfit;
                 break;
             }
@@ -135,7 +143,7 @@ public class OutfitService {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         Outfit outfitToUpdate = null;
         for (Outfit outfit : outfits) {
-            if (outfit.getId().equals(update.getId())) {
+            if (outfit.getId().equals(update.getId()) && outfit.isEnabled()) {
                 outfitToUpdate = outfit;
                 break;
             }
