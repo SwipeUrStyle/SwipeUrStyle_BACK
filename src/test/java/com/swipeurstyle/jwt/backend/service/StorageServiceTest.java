@@ -32,7 +32,7 @@ class StorageServiceTest {
     private StorageService storageService;
 
     @Test
-    public void testLoadImageFromName() {
+    void testLoadImageFromName() {
         // Simular el comportamiento del repositorio
         when(fileDataRepositoryMock.findByName("test.jpg")).thenReturn(Optional.of(new FileData()));
 
@@ -44,7 +44,7 @@ class StorageServiceTest {
     }
 
     @Test
-    public void testUploadImage() throws IOException {
+    void testUploadImage() throws IOException {
         // Crear un archivo multipart de ejemplo
         MultipartFile multipartFile = new MockMultipartFile("test.jpg", "test.jpg", "image/jpeg", "test".getBytes());
 
@@ -61,7 +61,7 @@ class StorageServiceTest {
 
 
     @Test
-    public void testDeleteImage_ImageFound() {
+    void testDeleteImage_ImageFound() {
         // Simular el comportamiento del repositorio
         when(storageRepositoryMock.findByName("test.jpg")).thenReturn(Optional.of(new ImageData()));
 
@@ -74,7 +74,7 @@ class StorageServiceTest {
     }
 
     @Test
-    public void testDeleteImage_ImageNotFound() {
+    void testDeleteImage_ImageNotFound() {
         // Simular el comportamiento del repositorio
         when(storageRepositoryMock.findByName("test.jpg")).thenReturn(Optional.empty());
 
