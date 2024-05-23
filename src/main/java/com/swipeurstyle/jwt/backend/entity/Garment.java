@@ -28,14 +28,5 @@ public class Garment {
 
     @Column(nullable = true)
     private LocalDateTime deletedAt;
-
-    @OneToMany(mappedBy = "top")
-    private List<Outfit> outfitsWithTop = new ArrayList<>();
-
-    @OneToMany(mappedBy = "bottom")
-    private List<Outfit> outfitsWithBottom = new ArrayList<>();
-
-    @OneToMany(mappedBy = "shoes")
-    private List<Outfit> outfitsWithShoes = new ArrayList<>();
 }
 

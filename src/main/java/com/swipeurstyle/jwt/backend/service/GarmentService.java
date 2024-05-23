@@ -93,10 +93,7 @@ public class GarmentService {
         }
 
         // Eliminar todos los conjuntos que contienen esta prenda
-        outfitRepository.deleteByTop(garmentToDelete);
-        outfitRepository.deleteByBottom(garmentToDelete);
-        outfitRepository.deleteByShoes(garmentToDelete);
-
+        deleteOutfitsAssociated(garmentToDelete);
 
         garmentToDelete.setGarmentState(GarmentState.DELETED);
         garmentToDelete.setDeletedAt(LocalDateTime.now());
@@ -159,10 +156,7 @@ public class GarmentService {
     public void cleanTrash(User user) {
         List<Garment> deletedGarments = getAllGarmentsDeletedByUser(user);
         for (Garment garment : deletedGarments) {
-            // Eliminar todos los conjuntos asociados
-            outfitRepository.deleteByTop(garment);
-            outfitRepository.deleteByBottom(garment);
-            outfitRepository.deleteByShoes(garment);
+            deleteOutfitsAssociated(garment);
 
             String imageName = garment.getImageName();
             storageService.deleteImage(imageName);
@@ -183,9 +177,21 @@ public class GarmentService {
             throw new GarmentException(GarmentException.GARMENT_NOT_IN_TRASH);
         }
 
+        deleteOutfitsAssociated(garmentToDelete);
+
         String imageName = garmentToDelete.getImageName();
         storageService.deleteImage(imageName);
         garmentRepository.delete(garmentToDelete);
+    }
+
+    private void deleteOutfitsAssociated(Garment garment) {
+        if (garment.getCategory().equals(GarmentCategory.TOP)){
+            outfitRepository.deleteByTop(garment);
+        } else if (garment.getCategory().equals(GarmentCategory.BOTTOM)) {
+            outfitRepository.deleteByBottom(garment);
+        } else if (garment.getCategory().equals(GarmentCategory.SHOES)) {
+            outfitRepository.deleteByShoes(garment);
+        }
     }
 
 }
