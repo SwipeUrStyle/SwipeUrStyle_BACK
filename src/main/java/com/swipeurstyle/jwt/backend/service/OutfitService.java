@@ -73,16 +73,6 @@ public class OutfitService {
     }
 
 
-    public Outfit updateOutfitToScheduled(LocalDate scheduledFor, Outfit outfit, User user) {
-        if (outfitRepository.findById(outfit.getId()).isPresent() && outfit.getUser().equals(user)) {
-            outfit.setScheduled(true);
-            outfit.setScheduledFor(scheduledFor);
-            return outfitRepository.save(outfit);
-
-        }
-        return null;
-    }
-
     public List<Outfit> getAllScheduledOutfits(User user) {
         List<Outfit> outfits = getAllOutfitsByUser(user);
         List<Outfit> scheduledOutfits = new ArrayList<>();
