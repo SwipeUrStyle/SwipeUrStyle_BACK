@@ -17,15 +17,15 @@ public class Outfit {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "top_id")
     private Garment top;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "bottom_id")
     private Garment bottom;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "shoes_id")
     private Garment shoes;
 
@@ -40,6 +40,5 @@ public class Outfit {
     private LocalDate scheduledFor;
 
     private boolean favorite;
-
-
 }
+
