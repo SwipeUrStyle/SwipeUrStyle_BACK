@@ -26,7 +26,7 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    public void testRegisterNewUser() {
+    void testRegisterNewUser() {
         // Crear un usuario de ejemplo
         User user = new User();
         user.setEmail("test@gmail.com");
@@ -46,7 +46,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testUpdateUser() throws UserNotFoundException {
+    void testUpdateUser() throws UserNotFoundException {
         // Crear un usuario de ejemplo
         User user = new User();
         user.setEmail("test@gmail.com");

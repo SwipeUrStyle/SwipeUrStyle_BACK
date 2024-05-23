@@ -23,7 +23,7 @@ public class OutfitServiceTest {
     private User user;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         user = new User();
         user.setEmail("test@example.com");
         user.setUsername("testuser");

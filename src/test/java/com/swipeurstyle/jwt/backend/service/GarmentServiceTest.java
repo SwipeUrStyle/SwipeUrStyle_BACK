@@ -33,14 +33,14 @@ class GarmentServiceTest {
     private User user;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         user = new User();
         user.setEmail("test@example.com");
         user.setUsername("testuser");
     }
 
     @Test
-    public void testAddNewGarment() {
+    void testAddNewGarment() {
         // Crear un garment de ejemplo
         Garment garment = new Garment();
         garment.setId(1L);
@@ -59,7 +59,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testGetAllGarmentsCreatedByUser() {
+    void testGetAllGarmentsCreatedByUser() {
 
         // Crear una lista de garments de ejemplo
         List<Garment> garments = new ArrayList<>();
@@ -91,7 +91,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testGetAllGarmentsDeletedByUser() {
+    void testGetAllGarmentsDeletedByUser() {
 
         // Crear una lista de garments de ejemplo
         List<Garment> garments = new ArrayList<>();
@@ -123,7 +123,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testGetAllGarmentsByUser() {
+    void testGetAllGarmentsByUser() {
 
         // Crear una lista de garments de ejemplo
         Garment garment1 = new Garment();
@@ -149,7 +149,7 @@ class GarmentServiceTest {
 
 
     @Test
-    public void testGetGarmentByIdAndUser_GarmentFound() throws GarmentException {
+    void testGetGarmentByIdAndUser_GarmentFound() throws GarmentException {
         // Crear una lista de garments de ejemplo
         Garment garment1 = new Garment();
         garment1.setId(1L);
@@ -171,7 +171,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testGetGarmentByIdAndUser_GarmentNotFound(){
+    void testGetGarmentByIdAndUser_GarmentNotFound(){
         // Crear una lista de garments de ejemplo
         Garment garment1 = new Garment();
         garment1.setId(1L);
@@ -195,7 +195,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testDeleteGarmentByUser_GarmentFound() throws GarmentException {
+    void testDeleteGarmentByUser_GarmentFound() throws GarmentException {
 
         // Crear una lista de garments de ejemplo
         Garment garment1 = new Garment();
@@ -222,7 +222,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testDeleteGarmentByUser_GarmentNotFound() {
+    void testDeleteGarmentByUser_GarmentNotFound() {
 
         // Crear una lista de garments de ejemplo
         Garment garment1 = new Garment();
@@ -248,7 +248,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testRestoreGarment_Success() throws GarmentException {
+    void testRestoreGarment_Success() throws GarmentException {
 
         Garment garmentToRestore = new Garment();
         garmentToRestore.setId(1L);
@@ -269,7 +269,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testRestoreGarment_GarmentNotFound() {
+    void testRestoreGarment_GarmentNotFound() {
 
         // Simular el comportamiento del repositorio
         when(garmentRepositoryMock.findByUser(user)).thenReturn(Arrays.asList());
@@ -284,7 +284,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testRestoreGarment_AlreadyCreated() {
+    void testRestoreGarment_AlreadyCreated() {
         Garment garmentToRestore = new Garment();
         garmentToRestore.setId(1L);
         garmentToRestore.setUser(user);
@@ -303,7 +303,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testGetAllGarmentsByCategory() {
+    void testGetAllGarmentsByCategory() {
 
         // Crear una lista de garments de ejemplo
         Garment garment1 = new Garment();
@@ -347,7 +347,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testUpdateGarmentByUser_Success() {
+    void testUpdateGarmentByUser_Success() {
 
         // Crear un garment de ejemplo
         Garment existingGarment = new Garment();
@@ -375,7 +375,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testUpdateGarmentByUser_GarmentNotFound() {
+    void testUpdateGarmentByUser_GarmentNotFound() {
 
         // Crear el garment de actualización
         Garment updatedGarment = new Garment();
@@ -401,7 +401,7 @@ class GarmentServiceTest {
 
 
     @Test
-    public void testCleanTrash() {
+    void testCleanTrash() {
         // Crear una lista de garments de ejemplo
         List<Garment> deletedGarments = new ArrayList<>();
         Garment garment1 = new Garment();
@@ -432,7 +432,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testDeleteGarmentFromTrash_Success() throws GarmentException {
+    void testDeleteGarmentFromTrash_Success() throws GarmentException {
 
         // Crear un garment de ejemplo en la papelera
         Garment garment = new Garment();
@@ -454,7 +454,7 @@ class GarmentServiceTest {
     }
 
     @Test
-    public void testDeleteGarmentFromTrash_GarmentNotInTrash() {
+    void testDeleteGarmentFromTrash_GarmentNotInTrash() {
 
         // Crear un garment de ejemplo que no esté en la papelera
         Garment garment = new Garment();
