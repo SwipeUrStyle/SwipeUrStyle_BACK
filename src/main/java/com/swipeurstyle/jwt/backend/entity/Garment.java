@@ -28,26 +28,5 @@ public class Garment {
     @Column(nullable = true)
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "top", cascade = CascadeType.REMOVE)
-    private List<Outfit> outfitsWithTop;
-
-    @OneToMany(mappedBy = "bottom", cascade = CascadeType.REMOVE)
-    private List<Outfit> outfitsWithBottom;
-
-    @OneToMany(mappedBy = "shoes", cascade = CascadeType.REMOVE)
-    private List<Outfit> outfitsWithShoes;
-
-    @PreRemove
-    private void preRemove() {
-        if (outfitsWithTop != null) {
-            outfitsWithTop.forEach(outfit -> outfit.setTop(null));
-        }
-        if (outfitsWithBottom != null) {
-            outfitsWithBottom.forEach(outfit -> outfit.setBottom(null));
-        }
-        if (outfitsWithShoes != null) {
-            outfitsWithShoes.forEach(outfit -> outfit.setShoes(null));
-        }
-    }
 
 }
