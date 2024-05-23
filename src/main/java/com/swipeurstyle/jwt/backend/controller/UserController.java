@@ -1,6 +1,5 @@
 package com.swipeurstyle.jwt.backend.controller;
 
-import com.swipeurstyle.jwt.backend.entity.Garment;
 import com.swipeurstyle.jwt.backend.entity.Gender;
 import com.swipeurstyle.jwt.backend.entity.Session;
 import com.swipeurstyle.jwt.backend.entity.User;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
