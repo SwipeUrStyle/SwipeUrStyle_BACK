@@ -19,7 +19,7 @@ public class Garment {
     @Enumerated(EnumType.STRING)
     private GarmentCategory category;
     private String imageName;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     private User user;
 
     @Enumerated(EnumType.STRING)

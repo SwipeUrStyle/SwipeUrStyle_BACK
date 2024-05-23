@@ -29,7 +29,7 @@ public class Outfit {
     @JoinColumn(name = "shoes_id")
     private Garment shoes;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     private User user;
 
     private LocalDate createdAt;
